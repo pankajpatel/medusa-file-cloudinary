@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2015"],
+    "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "./dist",
+    "typeRoots": ["node_modules/@types", "node_modules/@medusa"]
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules/*", "dist"]
+}

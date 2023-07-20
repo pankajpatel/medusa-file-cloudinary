@@ -8,10 +8,16 @@
 ## Options
 
 ```
-    cloud_name: [cloudinary cloud name],
-    api_key: [cloudinary api key],
-    api_secret: [cloudinary api secret],
-    secure: [enable secure uploads, default true],
+cloud_name: [cloudinary cloud name],
+api_key: [cloudinary api key],
+api_secret: [cloudinary api secret],
+secure: [enable secure uploads, default true],
+root_folder: [folder name to upload the files],
+use_file_name_as_path: [use filename to generate path]
+  // a.b.c.jpeg → a/b/c in cloudinary, default false
+uploadOptions: [Object passed to upload_stream while uploading, default {}]
+  // folder, public_id are passed, uploadOptions will override internal behaviour
+  // for root_folder & public_id's generation using use_file_name_as_path
 ```
 
 ## Usage
@@ -26,13 +32,16 @@ Then configure your `medusa-config.js` to include the plugin alongside the requi
 
 ```=javascript
 {
-    resolve: `medusa-file-cloudinary`,
-    options: {
-        cloud_name: "YOUR_CLOUD_NAME",
-        api_key: "YOUR_API_KEY",
-        api_secret: "YOUR_API_SECRET",
-        secure: true,
-    },
+  resolve: `medusa-file-cloudinary`,
+  options: {
+    cloud_name: "YOUR_CLOUD_NAME",
+    api_key: "YOUR_API_KEY",
+    api_secret: "YOUR_API_SECRET",
+    secure: true,
+    root_folder: 'FOLDER',
+    use_file_name_as_path: boolean // default value false
+    uploadOptions: {} // if folder and public_id are passed here, they will override internal behaviour for root_folder & public_id generation
+  },
 },
 ```
 You can find the above options in Cloudinary dashboard.
