@@ -8,6 +8,7 @@ class CloudinaryService extends FileService {
     super();
 
     this.root_ = options.root_folder;
+    this.uploadOptions_ = options.uploadOptions || {};
     this.nameToPath_ = options.use_file_name_as_path || false;
     this.nonPublicIdSlashCount_ = 7;
 
@@ -25,7 +26,7 @@ class CloudinaryService extends FileService {
 
     return new Promise((resolve, reject) => {
       const upload_stream = cloudinary.uploader.upload_stream(
-        { folder: this.root_, public_id: publicId },
+        { folder: this.root_, public_id: publicId, ...this.uploadOptions_ },
         (err, image) => {
           if (err) {
             console.error(err);
