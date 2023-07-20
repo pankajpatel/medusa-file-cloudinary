@@ -1,9 +1,14 @@
-import fs from "fs";
+import { createReadStream } from "fs";
 
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
 import { FileService } from "medusa-interfaces";
 
 class CloudinaryService extends FileService {
+  private nameToPath_: boolean;
+  private root_: string;
+  private uploadOptions_: UploadApiOptions;
+  private nonPublicIdSlashCount_: number;
+
   constructor({}, options) {
     super();
 
@@ -21,6 +26,7 @@ class CloudinaryService extends FileService {
   }
 
   // File upload
+  // @ts-ignore
   upload(file) {
     const publicId = this.buildPublicId(file.originalname);
 
@@ -37,20 +43,23 @@ class CloudinaryService extends FileService {
           resolve({ url: image.url });
         }
       );
-      fs.createReadStream(file.path).pipe(upload_stream);
+      createReadStream(file.path).pipe(upload_stream);
     });
   }
 
-  delete(file) {
-    // file is the url of image. We have to extract the public id from url
-    let publicId;
-    if (typeof file === "string" && file.toLowerCase().includes("cloudinary")) {
-      publicId = this.extractPublicId(file);
-    } else {
-      publicId = file;
-    }
-    cloudinary.uploader.destroy(publicId, function (result) {
-      resolve(result);
+  // @ts-ignore
+  delete(file: string) {
+    return new Promise((resolve) => {
+      // file is the url of image. We have to extract the public id from url
+      let publicId;
+      if (typeof file === "string" && file.toLowerCase().match("cloudinary")) {
+        publicId = this.extractPublicId(file);
+      } else {
+        publicId = file;
+      }
+      cloudinary.uploader.destroy(publicId, function (result) {
+        resolve(result);
+      });
     });
   }
 
