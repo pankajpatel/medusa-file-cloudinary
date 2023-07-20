@@ -3,7 +3,7 @@ node_modules
 .DS_store
 .env*
 /*.js
-!index.js
+!.*.js
 yarn.lock
 
 /dist

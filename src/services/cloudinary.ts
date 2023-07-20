@@ -26,7 +26,7 @@ class CloudinaryService extends FileService {
   }
 
   // File upload
-  // @ts-ignore
+  // @ts-ignore FileService interface says upload: () => void which doesn't align with needed implementation
   upload(file) {
     const publicId = this.buildPublicId(file.originalname);
 
@@ -47,7 +47,7 @@ class CloudinaryService extends FileService {
     });
   }
 
-  // @ts-ignore
+  // @ts-ignore FileService interface says delete: () => void which doesn't align with needed implementation
   delete(file: string) {
     return new Promise((resolve) => {
       // file is the url of image. We have to extract the public id from url
