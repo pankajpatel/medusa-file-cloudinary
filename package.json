@@ -1,6 +1,6 @@
 {
   "name": "@pankajpatel/medusa-file-cloudinary",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Cloudinary connector for Medusa",
   "main": "dist/index.js",
   "files": [
@@ -31,8 +31,7 @@
   "scripts": {
     "build": "babel src --out-dir dist --ignore **/__tests__ --extensions \".ts,.js\"",
     "prepare": "cross-env NODE_ENV=production npm run build",
-    "watch": "npm run build -- -w",
-    "postinstall": "npm run build"
+    "watch": "npm run build -- -w"
   },
   "peerDependencies": {
     "medusa-interfaces": "1.x"
