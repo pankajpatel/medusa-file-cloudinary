@@ -5,5 +5,4 @@ node_modules
 .env*
 /*.js
 !index.js
-yarn.lock
 tsconfig.json

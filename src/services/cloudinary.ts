@@ -1,18 +1,36 @@
 import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
 import { FileService } from "medusa-interfaces";
 
+interface Options {
+  getUploadOptions: (file: any, config: Options) => UploadApiOptions;
+  root_folder: string;
+  uploadOptions?: UploadApiOptions;
+  use_file_name_as_path?: boolean;
+  cloud_name: string;
+  api_key: string;
+  api_secret: string;
+  secure?: boolean;
+}
+
 class CloudinaryService extends FileService {
+  private options_: Options;
   private nameToPath_: boolean;
   private root_: string;
   private uploadOptions_: UploadApiOptions;
+  private getUploadOptions: (file: any, config: this) => UploadApiOptions = (
+    file,
+    config
+  ) => {};
   private nonPublicIdSlashCount_: number;
 
-  constructor({}, options) {
+  constructor({}, options: Options) {
     super();
 
+    this.options_ = options;
     this.root_ = options.root_folder;
     this.uploadOptions_ = options.uploadOptions || {};
     this.nameToPath_ = options.use_file_name_as_path || false;
+    this.getUploadOptions = this.options_.getUploadOptions || (() => ({}));
     this.nonPublicIdSlashCount_ = 7;
 
     cloudinary.config({
@@ -28,11 +46,13 @@ class CloudinaryService extends FileService {
   upload(file) {
     const publicId = this.buildPublicId(file.originalname);
     const { public_id, ...rest } = this.uploadOptions_;
-    const options = {
+    const options: UploadApiOptions = {
       folder: this.root_,
       public_id: public_id || publicId,
+      discard_original_filename: true,
       resource_type: this.getResourceType(file),
       ...rest,
+      ...this.getUploadOptions(file),
     };
 
     return cloudinary.uploader.upload(file.path, options).catch(console.error);
