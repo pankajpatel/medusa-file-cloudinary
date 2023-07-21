@@ -1,5 +1,3 @@
-import { createReadStream } from "fs";
-
 import { v2 as cloudinary, UploadApiOptions } from "cloudinary";
 import { FileService } from "medusa-interfaces";
 
@@ -29,41 +27,40 @@ class CloudinaryService extends FileService {
   // @ts-ignore FileService interface says upload: () => void which doesn't align with needed implementation
   upload(file) {
     const publicId = this.buildPublicId(file.originalname);
+    const { public_id, ...rest } = this.uploadOptions_;
+    const options = {
+      folder: this.root_,
+      public_id: public_id || publicId,
+      resource_type: this.getResourceType(file),
+      ...rest,
+    };
 
-    return new Promise((resolve, reject) => {
-      const upload_stream = cloudinary.uploader.upload_stream(
-        { folder: this.root_, public_id: publicId, ...this.uploadOptions_ },
-        (err, image) => {
-          if (err) {
-            console.error(err);
-            reject(err);
-            return;
-          }
-          console.log(image);
-          resolve({ url: image.url });
-        }
-      );
-      createReadStream(file.path).pipe(upload_stream);
-    });
+    return cloudinary.uploader.upload(file.path, options);
   }
 
   // @ts-ignore FileService interface says delete: () => void which doesn't align with needed implementation
   delete(file: string) {
-    return new Promise((resolve) => {
-      // file is the url of image. We have to extract the public id from url
-      let publicId;
-      if (typeof file === "string" && file.toLowerCase().match("cloudinary")) {
-        publicId = this.extractPublicId(file);
-      } else {
-        publicId = file;
-      }
-      cloudinary.uploader.destroy(publicId, function (result) {
-        resolve(result);
-      });
-    });
+    // file is the url of image. We have to extract the public id from url
+    const publicId =
+      typeof file === "string" && file.toLowerCase().match("cloudinary")
+        ? this.extractPublicId(file)
+        : file;
+    return cloudinary.uploader.destroy(publicId);
   }
 
   /* ------------------------------ helper methods ------------------------------ */
+
+  getResourceType(file) {
+    if (file.mimetype.startsWith("image/")) {
+      return "image";
+    }
+
+    if (file.mimetype.startsWith("video/")) {
+      return "video";
+    }
+
+    return "auto";
+  }
 
   buildPublicId(originalFileName) {
     const fileName = this.removeExtension(originalFileName);
