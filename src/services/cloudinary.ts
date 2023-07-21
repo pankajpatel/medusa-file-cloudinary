@@ -35,7 +35,7 @@ class CloudinaryService extends FileService {
       ...rest,
     };
 
-    return cloudinary.uploader.upload(file.path, options);
+    return cloudinary.uploader.upload(file.path, options).catch(console.error);
   }
 
   // @ts-ignore FileService interface says delete: () => void which doesn't align with needed implementation
@@ -45,7 +45,7 @@ class CloudinaryService extends FileService {
       typeof file === "string" && file.toLowerCase().match("cloudinary")
         ? this.extractPublicId(file)
         : file;
-    return cloudinary.uploader.destroy(publicId);
+    return cloudinary.uploader.destroy(publicId).catch(console.error);
   }
 
   /* ------------------------------ helper methods ------------------------------ */
